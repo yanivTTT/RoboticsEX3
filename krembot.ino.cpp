@@ -14,7 +14,7 @@ State state = turn;
 
 void bug_controller::setup() {
     krembot.setup();
-    LOG << "started!!!!" << std::endl;
+    LOG << "started!!!!1" << std::endl;
     target_pos = targetPosMsg.pos;
 }
 
