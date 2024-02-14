@@ -4,7 +4,13 @@
 CVector2 pos;
 CVector2 target_pos;
 CDegrees deg;
+float threshold = 0.05;
 
+enum State {
+    move,
+    turn
+};
+State state = turn;
 
 void bug_controller::setup() {
     krembot.setup();
@@ -17,9 +23,36 @@ void bug_controller::loop() {
 
     pos = posMsg.pos;
     deg = posMsg.degreeX;
-    krembot.Base.drive(100,0);
-    LOG << (pos - target_pos).SquareLength() << std::endl;
     LOG << deg << std::endl;
+    switch (state)
+    {
+    case State::move:{
+        krembot.Led.write(0, 255, 0);
+        if ((pos - target_pos).SquareLength() <threshold) {
+            krembot.Base.stop();
+        }
+        else {
+            krembot.Base.drive(100, 0);
+        }
+        break;
+    }
 
+    case State::turn: {
+            krembot.Led.write(255, 0, 0);
+            if (((deg - CDegrees(270)).UnsignedNormalize().GetValue() > 1) &&
+             ((deg - CDegrees(270)).UnsignedNormalize().GetValue() < 359)) {
+                LOG << "CHECKING FOR ANGLE: "<<(deg - CDegrees(270)).UnsignedNormalize() << std::endl;
+                krembot.Base.drive(0, 20);
+            }
+            else {
+                krembot.Base.stop();
+                state = State::move;
+            }
+        }
+        break;
+
+    default:
+        break;
+    }
 }
 
