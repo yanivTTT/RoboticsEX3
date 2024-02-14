@@ -12,18 +12,19 @@ enum State {
 };
 State state = turn;
 
-void bug_controller::setup() {
+void bug0_controller::setup() {
     krembot.setup();
     LOG << "started!!!!1" << std::endl;
     target_pos = targetPosMsg.pos;
 }
 
-void bug_controller::loop() {
+void bug0_controller::loop() {
     krembot.loop();
 
     pos = posMsg.pos;
     deg = posMsg.degreeX;
     LOG << deg << std::endl;
+    LOG << "Dis is: "<<(pos-target_pos).SquareLength() << std::endl;
     switch (state)
     {
     case State::move:{
@@ -33,6 +34,7 @@ void bug_controller::loop() {
         }
         else {
             krembot.Base.drive(100, 0);
+            
         }
         break;
     }

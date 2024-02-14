@@ -9,7 +9,7 @@ struct TargetPosMsg{
     CVector2 pos;
 };
 
-class bug_controller : public KrembotController {
+class bug0_controller : public KrembotController {
 private:
     bool isFirst = true;
 	Real robotSize = 0.20;
@@ -18,7 +18,7 @@ public:
     TargetPosMsg targetPosMsg;
 
     ParticleObserver Particle;
-    ~bug_controller() = default;
+    ~bug0_controller() = default;
     void setup();
     void loop();
 
@@ -39,4 +39,4 @@ public:
 };
 
 
-REGISTER_CONTROLLER(bug_controller, "bug_controller")
+REGISTER_CONTROLLER(bug0_controller, "bug0_controller")
