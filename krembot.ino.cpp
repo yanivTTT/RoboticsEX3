@@ -8,10 +8,22 @@ float threshold = 0.05;
 int counter = 0;
 
 enum State {
-    move,
-    turn
+    moveToTarge,
+    turnToTarget,
+    turnToObstscle,
+    avoidObstacle
 };
-State state = turn;
+State state = turnToTarget;
+
+void bypass_obstacle(bool bypass_from_right_side){}
+
+bool should_bypass_direction_be_right(){
+    return true;
+}
+
+bool should_bypass_obstacle(){
+    return true;
+}
 
 double calculateAngle(CVector2  p1, CVector2 p2){
     double dX = p2.GetX() - p1.GetX();
@@ -36,17 +48,18 @@ void bug0_controller::loop() {
     LOG << "Dis is: "<<(pos-target_pos).SquareLength() << std::endl;
     switch (state)
     {
-    case State::move:{
+    case State::moveToTarge:{
         krembot.Led.write(0, 255, 0);
         if ((pos - target_pos).SquareLength() <threshold) {
             krembot.Base.stop();
         }
         else {
-            if (counter == 10)
+            //TODO: if one of the bumpers is pressed go to the turn toobstical state
+            if (counter == 10) //might be better to use sandtime instad or something like that
             {
                 LOG << "TURNNNNIINGNNGNGG"<< std::endl;
                 counter = 0;
-                state = State::turn;
+                state = State::turnToTarget;
             }
             else {
             krembot.Base.drive(100, 0);
@@ -58,7 +71,7 @@ void bug0_controller::loop() {
         break;
     }
 
-    case State::turn: {
+    case State::turnToTarget: {
             krembot.Led.write(255, 0, 0);
                 
             if (((deg - CDegrees(calculateAngle(target_pos, pos))).UnsignedNormalize().GetValue() > 1) &&
@@ -69,11 +82,12 @@ void bug0_controller::loop() {
             }
             else {
                 krembot.Base.stop();
-                state = State::move;
+                state = State::moveToTarge;
             }
         }
         break;
-
+    //TODO: in the turn to obstacle roatet the robot until the right bumper is pressed
+    //TODO: in the avoidObsticale kepp mpving fowerd until the right bunmpers is no longer pressed than resume moveToTarget state
     default:
         break;
     }
