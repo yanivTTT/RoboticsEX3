@@ -91,7 +91,7 @@ void rotate_to_angle(Krembot& krembot, CDegrees desired_deg){
     int diff = std::min(CDegrees(deg - desired_deg).UnsignedNormalize().GetValue(),
                         CDegrees(desired_deg - deg).UnsignedNormalize().GetValue());
     int rotate_speed = std::min(std::max(min_rotating_speed, diff - 5), 100);
-    if ((desired_deg - deg).UnsignedNormalize().GetValue() < 180)
+    if ((desired_deg - deg).UnsignedNormalize().GetValue() > 180)
         rotate_speed = rotate_speed * (-1);
     krembot.Base.drive(0, rotate_speed);
     LOG << "diff " << diff << std::endl;
