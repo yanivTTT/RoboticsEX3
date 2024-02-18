@@ -64,13 +64,13 @@ bool head_straight(Krembot& krembot, int timer){
         return false;
     }
     else {
-    krembot.Base.drive(100, 0);
-    if (counter > timer)
-        counter = 0;
-    counter ++;  
-    LOG << "counter is: " << counter << std::endl;
-    LOG << "true " << timer << std::endl;
-    return true;         
+        krembot.Base.drive(100, 0);
+        if (counter > timer)
+            counter = 0;
+        counter ++;  
+        LOG << "counter is: " << counter << std::endl;
+        LOG << "true " << timer << std::endl;
+        return true;         
     }
 }
 
@@ -123,45 +123,6 @@ void turn_toward_target(Krembot& krembot){
         krembot.Base.stop();
     }
 }
-/*
-CDegrees calc_desired_bypass_deg(Krembot& krembot, bool should_bypass_direction_be_right){
-    CDegrees turn_deg{0.0};
-    double dir_effect = should_bypass_direction_be_right ? (-1) : 1;
-    CDegrees keep_bumper_pressed_tax(10.0);
-    LOGERR << bumper_pressed.front_left << std::endl;
-    if (BumperState::PRESSED == bumper_pressed.right){
-        turn_deg.SetValue(180.0);
-    }
-    if (BumperState::PRESSED == bumper_pressed.right && BumperState::PRESSED == bumper_pressed.front_right){
-        turn_deg.SetValue(157.0);
-    }
-    if (BumperState::PRESSED == bumper_pressed.left){
-        turn_deg = keep_bumper_pressed_tax;
-    }
-    if (BumperState::PRESSED == bumper_pressed.left && BumperState::PRESSED == bumper_pressed.front_left){
-        turn_deg.SetValue(22.0);
-    }
-    if (BumperState::PRESSED == bumper_pressed.front_right){
-        turn_deg.SetValue(135.0);
-    }
-    if (BumperState::PRESSED == bumper_pressed.front && BumperState::PRESSED == bumper_pressed.front_right){
-        turn_deg.SetValue(112.0);
-    }
-    if (BumperState::PRESSED == bumper_pressed.front_left){
-        turn_deg = CDegrees(45.0);
-    }
-    if (BumperState::PRESSED == bumper_pressed.front && BumperState::PRESSED == bumper_pressed.front_left){
-        turn_deg.SetValue(67.0);
-    }
-    if (BumperState::PRESSED == bumper_pressed.front){
-        turn_deg.SetValue(90.0);
-    }
-    //turn_deg = turn_deg - keep_bumper_pressed_tax;
-    turn_deg = turn_deg * dir_effect;
-    auto res_dir = CDegrees(turn_deg + deg).UnsignedNormalize();
-    LOGERR << "turn_deg: " << turn_deg << ", res_dir: " << res_dir << std::endl;
-    return res_dir;
-}*/
 
 void rotate_robot_to_bypass_obstacle(Krembot& Krembot, bool should_bypass_direction_be_right){
     static bool move_rotate_flag = true;
@@ -197,23 +158,6 @@ bool should_bypass_direction_be_right(Krembot& krembot){
     LOGERR << "bypass obstacle from left" << std::endl;
     return false;
     */
-}
-
-// currently doesnt handle corners
-void rotate_to_bypass_obstacle(Krembot& krembot, CDegrees bypass_desired_deg){
-    krembot.Led.write(255, 0, 0);
-    bool rotation_complete = false;
-    
-    rotation_complete =
-    bypass_desired_deg.GetValue() < deg.GetValue() + 1 && bypass_desired_deg.GetValue() > deg.GetValue() - 1;
-    if (rotation_complete){
-        LOGERR << "turn complete" << std::endl;
-        state = State::avoidObstacle;
-        krembot.Base.stop();
-        return;
-    }
-    
-    rotate_to_angle(krembot, bypass_desired_deg);
 }
 
 void bypass_obstacle(Krembot& krembot, bool bypass_from_right_side){
@@ -266,11 +210,8 @@ void pass_the_obstacle(Krembot& Krembot, bool should_bypass_direction_be_right){
             }
             if (!side_bumpers_pressed)
                 state = State::turnToTarget;
-        }
-        
-            
+        }    
     }
-    
 }
 
 void check_obstacle_passed(Krembot& krembot, bool bypass_from_right_side){
@@ -301,55 +242,6 @@ void check_obstacle_passed(Krembot& krembot, bool bypass_from_right_side){
         return; 
     } else
         krembot.Base.drive(100, 0);
-}
-
-/*
-void check_obstacle_passed(Krembot& krembot, bool bypass_from_right_side){
-    static bool calced_new_deg = false;
-    int move_dir = bypass_from_right_side ? 1 : (-1);
-    if (!calced_new_deg){
-        desired_angle = desired_angle + CDegrees(move_dir * 90);
-        calced_new_deg = true;
-        LOGERR << "check whether obstacle passed" << std::endl;
-    }
-    // rotate to dir - 90
-    if (!((desired_angle - deg).UnsignedNormalize().GetValue() < 1 ||
-        (desired_angle - deg).UnsignedNormalize().GetValue() > 359))
-    {
-        rotate_to_angle(krembot, desired_angle);
-        return;
-    }
-    // go straight
-    LOG << "heading_straight" << std::endl;
-
-    if (head_straight(krembot, 5)){
-        LOGERR << "front: " << (krembot.Bumpers.read().front == BumperState::PRESSED) << std::endl;
-        LOGERR << "left: " << (krembot.Bumpers.read().front_left == BumperState::PRESSED) << std::endl;
-        LOGERR << "right: " << (krembot.Bumpers.read().front_right == BumperState::PRESSED) << std::endl;
-        if (krembot.Bumpers.read().front == BumperState::PRESSED
-            || krembot.Bumpers.read().front_left == BumperState::PRESSED
-            || krembot.Bumpers.read().front_right == BumperState::PRESSED){
-            state = State::turnToObstscle;
-            desired_angle = desired_angle - CDegrees(move_dir * 90);
-            LOGERR << "obstacle didn't passed" << std::endl;
-            calced_new_deg = false;
-            counter = 0;
-        }
-        LOG << "return" << std::endl;
-        return;
-    }
-    // if front bumper a else b
-    state = State::moveToTarge;
-    LOGERR << "obstacle passed" << std::endl;
-    calced_new_deg = false;
-}*/
-
-bool is_bumper_pressed(BumpersRes result){
-    if (result.isAnyPressed())
-    {
-        return true;
-    }
-    return false;
 }
 
 void bug0_controller::setup() {
@@ -385,13 +277,6 @@ void bug0_controller::loop() {
         state = State::turnToObstscle;
         break;
     }
-    // bypass obstacle flow:
-    /*
-    case State::calcBypassDeg: {
-        desired_angle = calc_desired_bypass_deg(krembot, bypass_from_right);
-        state = State::turnToObstscle;
-        break;
-    }*/
     case State::turnToObstscle: {
         rotate_robot_to_bypass_obstacle(krembot, bypass_from_right);
         break;
