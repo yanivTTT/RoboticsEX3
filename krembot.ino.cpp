@@ -33,6 +33,14 @@ double calculateAngle(CVector2  p1, CVector2 p2){
 
 }
 
+bool is_bumper_pressed(BumpersRes result){
+    if (result.isAnyPressed())
+    {
+        return true;
+    }
+    return false;
+}
+
 void bug0_controller::setup() {
     krembot.setup();
     LOG << "started!!!!1" << std::endl;
@@ -55,6 +63,11 @@ void bug0_controller::loop() {
         }
         else {
             //TODO: if one of the bumpers is pressed go to the turn toobstical state
+            if (is_bumper_pressed(krembot.Bumpers.read()))
+            {
+               LOG << "==========PRESED==========="<< std::endl;
+            }
+            
             if (counter == 10) //might be better to use sandtime instad or something like that
             {
                 LOG << "TURNNNNIINGNNGNGG"<< std::endl;
