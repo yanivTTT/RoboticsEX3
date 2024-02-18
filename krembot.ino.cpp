@@ -52,8 +52,6 @@ void bug0_controller::loop() {
 
     pos = posMsg.pos;
     deg = posMsg.degreeX;
-    LOG << deg << std::endl;
-    LOG << "Dis is: "<<(pos-target_pos).SquareLength() << std::endl;
     switch (state)
     {
     case State::moveToTarge:{
@@ -66,6 +64,7 @@ void bug0_controller::loop() {
             if (is_bumper_pressed(krembot.Bumpers.read()))
             {
                LOG << "==========PRESED==========="<< std::endl;
+               state = State::turnToObstscle;
             }
             
             if (counter == 10) //might be better to use sandtime instad or something like that
@@ -91,7 +90,7 @@ void bug0_controller::loop() {
              ((deg - CDegrees(calculateAngle(target_pos, pos))).UnsignedNormalize().GetValue() < 359)) {
                 LOG << "CHECKING FOR ANGLE: "<<(deg - CDegrees(calculateAngle(target_pos, pos))).UnsignedNormalize() << std::endl;
                 LOG << "the angle withtarget is: "<<calculateAngle(target_pos, pos) << std::endl;
-                krembot.Base.drive(0, 5);
+                krembot.Base.drive(0, 7);
             }
             else {
                 krembot.Base.stop();
@@ -100,8 +99,31 @@ void bug0_controller::loop() {
         }
         break;
     //TODO: in the turn to obstacle roatet the robot until the right bumper is pressed
+    case State::turnToObstscle: {
+        BumpersRes result = krembot.Bumpers.read();
+        if (result.front == BumperState::PRESSED)
+        {
+            LOG << "++++++++++++++++++++++++LEFT BUMPER IS PRESSED: ++++++++++++++++++++++++" << std::endl;
+            state = State::avoidObstacle;
+        }
+        else {
+            if (is_bumper_pressed(krembot.Bumpers.read()))
+            {
+               LOG << "==========PRESED==========="<< std::endl;
+            }
+            LOG << "i am moving!!!"<< std::endl;
+            krembot.Base.drive(1,7);
+        }
+        
+    }
     //TODO: in the avoidObsticale kepp mpving fowerd until the right bunmpers is no longer pressed than resume moveToTarget state
+    case State::avoidObstacle: {
+        krembot.Base.drive(0,0);
+        LOG << "stopped moving"<< std::endl;
+        break;
+    }
     default:
+        krembot.Base.drive(0,0);
         break;
     }
 }
