@@ -247,6 +247,14 @@ void check_obstacle_passed(Krembot& krembot, bool bypass_from_right_side){
     calced_new_deg = false;
 }
 
+bool is_bumper_pressed(BumpersRes result){
+    if (result.isAnyPressed())
+    {
+        return true;
+    }
+    return false;
+}
+
 void bug0_controller::setup() {
     krembot.setup();
     LOG << "started!!!!" << std::endl;
