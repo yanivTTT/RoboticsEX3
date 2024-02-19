@@ -58,7 +58,6 @@ bool head_straight(Krembot& krembot, int timer){
     {
         counter = 0;
         krembot.Base.stop();
-        LOG << "false" << std::endl;
         return false;
     }
     else {
@@ -66,8 +65,6 @@ bool head_straight(Krembot& krembot, int timer){
         if (counter > timer)
             counter = 0;
         counter ++;  
-        LOG << "counter is: " << counter << std::endl;
-        LOG << "true " << timer << std::endl;
         return true;         
     }
 }
@@ -162,6 +159,7 @@ bool should_bypass_direction_be_right(Krembot& krembot){
 void bypass_obstacle(Krembot& krembot, bool bypass_from_right_side){
     // in the avoidObsticale keep moving fowerd until the right bunmper is no longer pressed, then resume moveToTarget state
     krembot.Led.write(0, 255, 0);
+    krembot.Base.drive(100, 0);
     auto bumpers_res = krembot.Bumpers.read();
     bool does_front_bumper_pressed = bumpers_res.front == BumperState::PRESSED;
     bool does_side_bumper_pressed = bypass_from_right_side ?
@@ -182,11 +180,12 @@ void bypass_obstacle(Krembot& krembot, bool bypass_from_right_side){
 }
 
 void pass_the_obstacle(Krembot& Krembot, bool should_bypass_direction_be_right){
-    timer.start(5);
+    timer.start(2);
     if (timer.finished()){
         static bool first_calc_flag = true;
         if (first_calc_flag){
-            desired_angle = deg + (should_bypass_direction_be_right ? CDegrees(90) : CDegrees(-30));
+            desired_angle = deg + (should_bypass_direction_be_right ? CDegrees(90) : CDegrees(-90));
+            LOGERR << "pass obstacle: desired_angle: " << desired_angle << std::endl;
             first_calc_flag = false;
         }
         auto delta_deg = CDegrees(desired_angle - deg).SignedNormalize().GetValue();
@@ -195,7 +194,7 @@ void pass_the_obstacle(Krembot& Krembot, bool should_bypass_direction_be_right){
             return;
         }
         else{
-            Krembot.Base.drive(20, 0);
+            Krembot.Base.drive(50, 0);
             auto bumpers = Krembot.Bumpers.read();
             bool side_bumpers_pressed = should_bypass_direction_be_right ?
             bumpers.left == BumperState::PRESSED : bumpers.right == BumperState::PRESSED;
@@ -204,16 +203,17 @@ void pass_the_obstacle(Krembot& Krembot, bool should_bypass_direction_be_right){
             
             if (bumpers.front == BumperState::PRESSED && side_front_bumpers_pressed){ // corner
                 state = State::turnToObstscle;
+                first_calc_flag = false;
                 return;
             }
-            if (!side_bumpers_pressed && ! side_front_bumpers_pressed){
+            if (!side_bumpers_pressed && !side_front_bumpers_pressed){
                 state = State::turnToTarget;
                 first_calc_flag = false;
             }
         }
         return;   
     }
-    Krembot.Base.drive(100, 0);
+    Krembot.Base.drive(20, 0);
 }
 
 void bug0_controller::setup() {
