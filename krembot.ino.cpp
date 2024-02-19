@@ -179,7 +179,7 @@ void bypass_obstacle(Krembot& krembot, bool bypass_from_right_side){
     }
 }
 
-void pass_the_obstacle(Krembot& Krembot, bool should_bypass_direction_be_right){
+void pass_the_obstacle(Krembot& krembot, bool should_bypass_direction_be_right){
     timer.start(2);
     if (timer.finished()){
         static bool first_calc_flag = true;
@@ -190,12 +190,12 @@ void pass_the_obstacle(Krembot& Krembot, bool should_bypass_direction_be_right){
         }
         auto delta_deg = CDegrees(desired_angle - deg).SignedNormalize().GetValue();
         if (delta_deg > 1 && delta_deg < 359){
-            rotate_to_angle(Krembot, desired_angle);
+            rotate_to_angle(krembot, desired_angle);
             return;
         }
         else{
-            Krembot.Base.drive(50, 0);
-            auto bumpers = Krembot.Bumpers.read();
+            krembot.Base.drive(50, 0);
+            auto bumpers = krembot.Bumpers.read();
             bool side_bumpers_pressed = should_bypass_direction_be_right ?
             bumpers.left == BumperState::PRESSED : bumpers.right == BumperState::PRESSED;
             bool side_front_bumpers_pressed = should_bypass_direction_be_right ?
@@ -213,7 +213,7 @@ void pass_the_obstacle(Krembot& Krembot, bool should_bypass_direction_be_right){
         }
         return;   
     }
-    Krembot.Base.drive(20, 0);
+    krembot.Base.drive(20, 0);
 }
 
 void bug0_controller::setup() {
