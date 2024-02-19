@@ -1,3 +1,5 @@
+#yaniv lukin 211337013
+#Ido Trabelssi 316334994
 set (CMAKE_CXX_STANDARD 11)
 
 #todo user: rename program
